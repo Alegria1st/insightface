@@ -17,6 +17,7 @@ from utils.utils_callbacks import CallBackLogging, CallBackVerification
 from utils.utils_config import get_config
 from utils.utils_logging import AverageMeter, init_logging
 from utils.utils_distributed_sampler import setup_seed
+from eval_ijbc_by_epoch import *
 
 assert torch.__version__ >= "1.9.0", "In order to enjoy the features of the new torch, \
 we have upgraded the torch to 1.9.0. torch before than 1.9.0 may not work in the future."
@@ -132,7 +133,7 @@ def main(args):
         logging.info(": " + key + " " * num_space + str(value))
 
     callback_verification = CallBackVerification(
-        val_targets=cfg.val_targets, rec_prefix=cfg.rec, summary_writer=summary_writer
+        val_targets=cfg.val_targets, rec_prefix=cfg.val_dir, summary_writer=summary_writer
     )
     callback_logging = CallBackLogging(
         frequent=cfg.frequent,
@@ -194,6 +195,12 @@ def main(args):
 
         if cfg.dali:
             train_loader.reset()
+
+    with torch.no_grad():
+        ijbb_tpr_fpr_table = calculate_ijbc_score(backbone, os.path.join(cfg.output, "ijb_result"), "IJBB")
+        callback_logging(ijbb_tpr_fpr_table)
+        ijbc_tpr_fpr_table = calculate_ijbc_score(backbone, os.path.join(cfg.output, "ijb_result"), "IJBC")
+        callback_logging(ijbc_tpr_fpr_table)
 
     if rank == 0:
         path_module = os.path.join(cfg.output, "model.pt")

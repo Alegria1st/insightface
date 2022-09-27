@@ -47,3 +47,6 @@ config.seed = 2048
 
 # dataload numworkers
 config.num_workers = 2
+
+# validation dir
+config.val_dir = "./train_tmp/validation"

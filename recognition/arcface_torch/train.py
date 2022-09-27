@@ -132,7 +132,7 @@ def main(args):
         logging.info(": " + key + " " * num_space + str(value))
 
     callback_verification = CallBackVerification(
-        val_targets=cfg.val_targets, rec_prefix=cfg.rec, summary_writer=summary_writer
+        val_targets=cfg.val_targets, rec_prefix=cfg.val_dir, summary_writer=summary_writer
     )
     callback_logging = CallBackLogging(
         frequent=cfg.frequent,

@@ -14,12 +14,12 @@ config.sample_rate = 1.0
 config.fp16 = True
 config.momentum = 0.9
 config.weight_decay = 5e-4
-config.batch_size = 128
+config.batch_size = 256
 config.lr = 0.1
-config.verbose = 2000
+config.verbose = 1000 # 2000
 config.dali = False
 
-config.rec = "/train_tmp/WebFace4M"
+config.rec = "./train_tmp/WebFace4M"
 config.num_classes = 205990
 config.num_image = 4235242
 config.num_epoch = 20
