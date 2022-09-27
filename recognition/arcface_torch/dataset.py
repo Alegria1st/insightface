@@ -76,6 +76,7 @@ def get_dataloader(
     return train_loader
 
 class BackgroundGenerator(threading.Thread):
+    
     def __init__(self, generator, local_rank, max_prefetch=6):
         super(BackgroundGenerator, self).__init__()
         self.queue = Queue.Queue(max_prefetch)
@@ -157,15 +158,21 @@ class MXFaceDataset(Dataset):
 
     def __getitem__(self, index):
         idx = self.imgidx[index]
-        s = self.imgrec.read_idx(idx)
-        header, img = mx.recordio.unpack(s)
-        label = header.label
-        if not isinstance(label, numbers.Number):
-            label = label[0]
-        label = torch.tensor(label, dtype=torch.long)
-        sample = mx.image.imdecode(img).asnumpy()
-        if self.transform is not None:
-            sample = self.transform(sample)
+        try:
+            s = self.imgrec.read_idx(idx)
+            header, img = mx.recordio.unpack(s)
+            label = header.label
+            if not isinstance(label, numbers.Number):
+                label = label[0]
+            label = torch.tensor(label, dtype=torch.long)
+            sample = mx.image.imdecode(img).asnumpy()
+            if self.transform is not None:
+                sample = self.transform(sample)
+        except:
+            sample = torch.rand(3, 112, 112)
+            label = torch.tensor(999999)
+            pass
+            
         return sample, label
 
     def __len__(self):
